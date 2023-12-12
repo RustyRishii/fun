@@ -171,20 +171,18 @@ export default function App() {
   const [quotes, setQuotes] = useState([]);
   //const [refreshing, setRefreshing] = useState(false);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch("https://stoic-quotes.com/api/quote");
-      const data = await response.json();
-      setQuotes(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setRefreshing(false);
-    }
+  const [apiData, setAPIData] = useState(undefined);
+  const getAPIdata = async () => {
+    const url = "https://stoic-quotes.com/api/quote";
+    let result = await fetch(url);
+    let myData = await result.json();
+    setAPIData(myData);
+    //console.log(result);
+    //console.warn(result);
   };
 
   useEffect(() => {
-    fetchData();
+    getAPIdata();
   }, []);
 
   function randomColorPicker() {
@@ -198,9 +196,10 @@ export default function App() {
     setRefreshing(true);
     setRandomColor(randomColorPicker());
     //fetchData();
+    getAPIdata();
     setTimeout(() => {
       setRefreshing(false);
-    }, 100);
+    }, 200);
   }, []);
 
   return (
@@ -228,7 +227,15 @@ export default function App() {
               from the React native docs
             </Text>
             <Text style={styles.colorName}>Color: {colorName}</Text>
-            {/* <Text>[quotes]</Text> */}
+            {apiData ? (
+              <View>
+                {/* <Text style={{ fontSize: 20 }}>{apiData.id}</Text> */}
+                <Text style={{ fontSize: 20 }}>{apiData.text}</Text>
+                <Text style={{ fontSize: 20, textAlign: "right" }}>
+                  {apiData.author}
+                </Text>
+              </View>
+            ) : null}
           </ScrollView>
         </View>
       </SafeAreaView>
